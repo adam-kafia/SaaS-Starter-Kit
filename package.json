@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "scripts": {
+    "format": "prettier --write \"{saas-backend,saas-frontend}/**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "format:check": "prettier --check \"{saas-backend,saas-frontend}/**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
+    "lint": "npm -C saas-backend run lint && npm -C saas-frontend run lint",
+    "lint:fix": "npm -C saas-backend run lint -- --fix && npm -C saas-frontend run lint -- --fix"
+  },
+  "devDependencies": {
+    "prettier": "^3.7.4"
+  }
+}

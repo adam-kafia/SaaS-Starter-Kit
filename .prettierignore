@@ -1,0 +1,8 @@
+node_modules
+dist
+.next
+coverage
+build
+**/prisma/generated/**
+**/src/prisma/generated/**
+**/prisma/.generated/**
