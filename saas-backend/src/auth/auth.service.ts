@@ -7,12 +7,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { UserService } from '../user/user.service';
+import { UsersService } from '../users/user.service';
+import { JwtPayload } from './types/jwt-payload.type';
 
-type JwtPayload = {
-  sub: string;
-  email: string;
-};
 
 @Injectable()
 export class AuthService {
@@ -20,7 +17,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
-    private readonly userService: UserService,
+    private readonly usersService: UsersService,
   ) {}
 
   private accessTtl(): number {
@@ -73,7 +70,7 @@ export class AuthService {
     return { user, accessToken, refreshToken };
   }
   async login(email: string, password: string) {
-    const user = await this.userService.findByEmail(email)
+    const user = await this.usersService.findByEmail(email);
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
     const ok = await bcrypt.compare(password, user.passwordHash);

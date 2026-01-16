@@ -9,7 +9,7 @@ export type UserPublic = {
 };
 
 @Injectable()
-export class UserService {
+export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findById(id: string): Promise<UserPublic> {
