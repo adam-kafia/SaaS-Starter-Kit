@@ -5,6 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { UserModule } from '../user/user.module';
 
 @Module({
   controllers: [AuthController],
@@ -16,7 +17,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
         secret: config.get<string>('JWT_ACCESS_SECRET')!,
       }),
     }),
-    PassportModule
+    PassportModule,
+    UserModule
   ],
   exports: [AuthService],
 })

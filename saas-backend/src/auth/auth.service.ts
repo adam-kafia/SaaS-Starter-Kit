@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
+import { UserService } from '../user/user.service';
 
 type JwtPayload = {
   sub: string;
@@ -19,6 +20,7 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
+    private readonly userService: UserService,
   ) {}
 
   private accessTtl(): number {
@@ -71,7 +73,7 @@ export class AuthService {
     return { user, accessToken, refreshToken };
   }
   async login(email: string, password: string) {
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const user = await this.userService.findByEmail(email)
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
     const ok = await bcrypt.compare(password, user.passwordHash);
