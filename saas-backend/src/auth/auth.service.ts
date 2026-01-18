@@ -10,7 +10,6 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/user.service';
 import { JwtPayload } from './types/jwt-payload.type';
 
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -19,6 +18,23 @@ export class AuthService {
     private readonly config: ConfigService,
     private readonly usersService: UsersService,
   ) {}
+
+  async createSessionForUser(user: { id: string; email: string }) {
+    const payload: JwtPayload = { sub: user.id, email: user.email };
+
+    const accessToken = await this.signAccessToken(payload);
+    const refreshToken = await this.signRefreshToken(payload);
+
+    await this.prisma.refreshToken.create({
+      data: {
+        userId: user.id,
+        tokenHash: await this.hashToken(refreshToken),
+        expiresAt: new Date(Date.now() + this.refreshTtl() * 1000),
+      },
+    });
+
+    return { accessToken, refreshToken };
+  }
 
   private accessTtl(): number {
     return Number(this.config.get<string>('JWT_ACCESS_TTL_SECONDS') ?? 900);
@@ -55,19 +71,8 @@ export class AuthService {
       select: { id: true, email: true },
     });
 
-    const payload: JwtPayload = { sub: user.id, email: user.email };
-    const accessToken = await this.signAccessToken(payload);
-    const refreshToken = await this.signRefreshToken(payload);
-
-    await this.prisma.refreshToken.create({
-      data: {
-        userId: user.id,
-        tokenHash: await this.hashToken(refreshToken),
-        expiresAt: new Date(Date.now() + this.refreshTtl() * 1000),
-      },
-    });
-
-    return { user, accessToken, refreshToken };
+    const { accessToken, refreshToken } = await this.createSessionForUser(user);
+    return { id: user.id, email: user.email, accessToken, refreshToken };
   }
   async login(email: string, password: string) {
     const user = await this.usersService.findByEmail(email);
@@ -76,20 +81,10 @@ export class AuthService {
     const ok = await bcrypt.compare(password, user.passwordHash);
     if (!ok) throw new UnauthorizedException('Invalid credentials');
 
-    const payload: JwtPayload = { sub: user.id, email: user.email };
-    const accessToken = await this.signAccessToken(payload);
-    const refreshToken = await this.signRefreshToken(payload);
-
-    await this.prisma.refreshToken.create({
-      data: {
-        userId: user.id,
-        tokenHash: await this.hashToken(refreshToken),
-        expiresAt: new Date(Date.now() + this.refreshTtl() * 1000),
-      },
-    });
-
+    const { accessToken, refreshToken } = await this.createSessionForUser(user);
     return {
-      user: { id: user.id, email: user.email },
+      id: user.id,
+      email: user.email,
       accessToken,
       refreshToken,
     };

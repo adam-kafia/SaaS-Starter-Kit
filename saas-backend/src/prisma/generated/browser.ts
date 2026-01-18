@@ -42,3 +42,8 @@ export type RefreshToken = Prisma.RefreshTokenModel
  * 
  */
 export type Subscription = Prisma.SubscriptionModel
+/**
+ * Model OrganizationInvite
+ * 
+ */
+export type OrganizationInvite = Prisma.OrganizationInviteModel

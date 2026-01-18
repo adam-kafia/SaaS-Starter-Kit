@@ -6,10 +6,12 @@ import { ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from '../users/user.module';
+import { OrgMemberGuard } from './guards/org-member.guard';
+import { OrgRoleGuard } from './guards/org-role.guard';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService,JwtStrategy],
+  providers: [AuthService, JwtStrategy, OrgMemberGuard, OrgRoleGuard],
   imports: [
     JwtModule.registerAsync({
       inject: [ConfigService],
@@ -18,7 +20,7 @@ import { UsersModule } from '../users/user.module';
       }),
     }),
     PassportModule,
-    UsersModule
+    UsersModule,
   ],
   exports: [AuthService],
 })

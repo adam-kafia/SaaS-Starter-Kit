@@ -46,8 +46,9 @@ model Organization {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  memberships  Membership[]
-  subscription Subscription?
+  memberships         Membership[]
+  subscription        Subscription?
+  organizationInvites OrganizationInvite[]
 }
 
 model Membership {
@@ -94,4 +95,28 @@ model Subscription {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+  EXPIRED
+}
+
+model OrganizationInvite {
+  id         String       @id @default(cuid())
+  orgId      String
+  email      String
+  role       OrgRole      @default(MEMBER)
+  tokenHash  String       @unique
+  status     InviteStatus @default(PENDING)
+  expiresAt  DateTime
+  createdAt  DateTime     @default(now())
+  acceptedAt DateTime?
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId])
+  @@index([email])
 }
