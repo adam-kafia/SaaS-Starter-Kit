@@ -72,7 +72,7 @@ export class AuthService {
     });
 
     const { accessToken, refreshToken } = await this.createSessionForUser(user);
-    return { id: user.id, email: user.email, accessToken, refreshToken };
+    return { user, accessToken, refreshToken };
   }
   async login(email: string, password: string) {
     const user = await this.usersService.findByEmail(email);
@@ -83,8 +83,7 @@ export class AuthService {
 
     const { accessToken, refreshToken } = await this.createSessionForUser(user);
     return {
-      id: user.id,
-      email: user.email,
+      user: { id: user.id, email: user.email },
       accessToken,
       refreshToken,
     };
