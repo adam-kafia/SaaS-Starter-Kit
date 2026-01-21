@@ -4,6 +4,21 @@ Base URL (local): `http://localhost:3000`
 
 All requests/response bodies are JSON unless stated otherwise.
 
+## Routes index (all current routes)
+
+- `POST /auth/register`
+- `POST /auth/login`
+- `POST /auth/refresh`
+- `POST /auth/logout`
+- `GET /user/me`
+- `POST /orgs`
+- `GET /orgs/mine`
+- `GET /orgs/active`
+- `GET /orgs/:orgId`
+- `GET /orgs/:orgId/members`
+- `POST /orgs/:orgId/invites`
+- `POST /orgs/invites/accept`
+
 ## Auth overview
 
 - Access tokens are JWTs sent via `Authorization: Bearer <token>`.
